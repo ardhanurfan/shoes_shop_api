@@ -29,4 +29,4 @@ jobs:
 
       - name: SSH into Azure VM and Build and Run Docker Compose
         run: |
-          ssh -o StrictHostKeyChecking=no -A -tt ${{ secrets.AZURE_VM_USERNAME }}@${{ secrets.AZURE_VM_IP }} "cd /home/ardhanurfan/shoes_shop_api && DOCKER_BUILDKIT=1 docker-compose up -d --build"
+          ssh -o StrictHostKeyChecking=no -A -tt ${{ secrets.AZURE_VM_USERNAME }}@${{ secrets.AZURE_VM_IP }} "cd /home/ardhanurfan/shoes_shop_api && docker-compose up -d --build"
