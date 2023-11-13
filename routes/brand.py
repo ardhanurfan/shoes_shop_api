@@ -1,5 +1,7 @@
-from fastapi import APIRouter, HTTPException
+from typing import Annotated
+from fastapi import APIRouter, Depends, HTTPException, status
 from db.connection import cursor, conn
+from middleware.jwt import check_is_admin
 from models.brand import Brand
 
 brand = APIRouter()
@@ -21,7 +23,7 @@ async def read_data(id: int):
     cursor.execute(select_query, (id,))
     data = cursor.fetchone()
     if data is None:
-        raise HTTPException(status_code=404, detail=f"Data brand id {id} Not Found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Data brand id {id} Not Found")
 
     return {
         "code": 200,
@@ -30,7 +32,9 @@ async def read_data(id: int):
     }
 
 @brand.post('/brand')
-async def write_data(brand: Brand):
+async def write_data(brand: Brand, check: Annotated[bool, Depends(check_is_admin)]):
+    if not check:
+        return
     brand_json = brand.model_dump()
     query = "INSERT INTO brands(name) VALUES(%s);"
     cursor.execute(query, (brand_json["name"],))
@@ -47,13 +51,15 @@ async def write_data(brand: Brand):
     }
     
 @brand.put('/brand/{id}')
-async def update_data(brand: Brand, id:int):
+async def update_data(brand: Brand, id:int, check: Annotated[bool, Depends(check_is_admin)]):
+    if not check:
+        return
     brand_json = brand.model_dump()
     select_query = "SELECT * FROM brands WHERE id = %s;"
     cursor.execute(select_query, (id,))
     data = cursor.fetchone()
     if data is None:
-        raise HTTPException(status_code=404, detail=f"Data brand id {id} Not Found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Data brand id {id} Not Found")
     
     query = "UPDATE brands SET name = %s WHERE brands.id = %s;"
     cursor.execute(query, (brand_json["name"], id,))
@@ -70,12 +76,14 @@ async def update_data(brand: Brand, id:int):
     }
 
 @brand.delete('/brand/{id}')
-async def delete_data(id: int):
+async def delete_data(id: int, check: Annotated[bool, Depends(check_is_admin)]):
+    if not check:
+        return
     select_query = "SELECT * FROM brands WHERE id = %s;"
     cursor.execute(select_query, (id,))
     data = cursor.fetchone()
     if data is None:
-        raise HTTPException(status_code=404, detail=f"Data brand id {id} Not Found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Data brand id {id} Not Found")
     
     query = "DELETE FROM brands WHERE id = %s;"
     cursor.execute(query, (id,))

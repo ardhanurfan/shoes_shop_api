@@ -22,10 +22,11 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no -A -tt ${{ secrets.AZURE_VM_USERNAME }}@${{ secrets.AZURE_VM_IP }} "cd /home/ardhanurfan/shoes_shop_api && git pull"
 
-      - name: Set up Docker Compose
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y docker-compose
+      # Tidak diperlukan sudah ada di install vm
+      # - name: Set up Docker Compose
+      #   run: |
+      #     sudo apt-get update
+      #     sudo apt-get install -y docker-compose
 
       - name: SSH into Azure VM and Build and Run Docker Compose
         run: |

@@ -1,11 +1,15 @@
-from fastapi import APIRouter, HTTPException
+from typing import Annotated
+from fastapi import APIRouter, Depends, HTTPException, status
 from db.connection import cursor, conn
+from middleware.jwt import check_is_admin, check_is_login
 from models.shoes import Shoes
 
 shoes = APIRouter()
 
 @shoes.get('/shoes')
-async def read_data():
+async def read_data(check: Annotated[bool, Depends(check_is_login)]):
+    if not check:
+        return
     query = "SELECT * FROM shoes;"
     cursor.execute(query)
     data = cursor.fetchall()
@@ -28,13 +32,15 @@ async def read_data():
     }
 
 @shoes.get('/shoes/{id}')
-async def read_data(id: int):
+async def read_data(id: int, check: Annotated[bool, Depends(check_is_login)]):
+    if not check:
+        return
     select_query = "SELECT * FROM shoes WHERE id = %s;"
     cursor.execute(select_query, (id,))
     data = cursor.fetchone()
 
     if data is None:
-        raise HTTPException(status_code=404, detail=f"Data shoes id {id} Not Found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Data shoes id {id} Not Found")
 
     query = "SELECT * FROM varians WHERE shoes_id = %s;"
     cursor.execute(query, (data["id"],))
@@ -53,13 +59,15 @@ async def read_data(id: int):
     }
 
 @shoes.post('/shoes')
-async def write_data(shoes: Shoes):
+async def write_data(shoes: Shoes, check: Annotated[bool, Depends(check_is_admin)]):
+    if not check:
+        return
     shoes_json = shoes.model_dump()
     select_query = "SELECT * FROM brands WHERE id = %s;"
     cursor.execute(select_query, (shoes_json["brand_id"],))
     data = cursor.fetchone()
     if data is None:
-        raise HTTPException(status_code=404, detail=f"Brand id {shoes_json['brand_id']} Not Found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Brand id {shoes_json['brand_id']} Not Found")
 
     query = "INSERT INTO shoes(brand_id, name, category, stock) VALUES(%s, %s, %s, %s);"
     cursor.execute(query, (shoes_json["brand_id"], shoes_json["name"], shoes_json["category"], shoes_json["stock"],))
@@ -76,13 +84,15 @@ async def write_data(shoes: Shoes):
     }
     
 @shoes.put('/shoes/{id}')
-async def update_data(shoes: Shoes, id:int):
+async def update_data(shoes: Shoes, id:int, check: Annotated[bool, Depends(check_is_admin)]):
+    if not check:
+        return
     shoes_json = shoes.model_dump()
     select_query = "SELECT * FROM shoes WHERE id = %s;"
     cursor.execute(select_query, (id,))
     data = cursor.fetchone()
     if data is None:
-        raise HTTPException(status_code=404, detail=f"Data shoes id {id} Not Found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Data shoes id {id} Not Found")
     
     query = "UPDATE shoes SET brand_id=%s, name=%s, category=%s, stock=%s WHERE shoes.id = %s;"
     cursor.execute(query, (shoes_json["brand_id"], shoes_json["name"], shoes_json["category"], shoes_json["stock"], id,))
@@ -99,12 +109,14 @@ async def update_data(shoes: Shoes, id:int):
     }
 
 @shoes.delete('/shoes/{id}')
-async def delete_data(id: int):
+async def delete_data(id: int, check: Annotated[bool, Depends(check_is_admin)]):
+    if not check:
+        return
     select_query = "SELECT * FROM shoes WHERE id = %s;"
     cursor.execute(select_query, (id,))
     data = cursor.fetchone()
     if data is None:
-        raise HTTPException(status_code=404, detail=f"Data shoes id {id} Not Found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Data shoes id {id} Not Found")
     
     query = "DELETE FROM shoes WHERE id = %s;"
     cursor.execute(query, (id,))
