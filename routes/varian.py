@@ -1,13 +1,15 @@
 from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, status
 from db.connection import cursor, conn
-from middleware.jwt import check_is_admin
+from middleware.jwt import check_is_admin, check_is_login
 from models.varian import Varian
 
 varian = APIRouter()
 
 @varian.get('/varian')
-async def read_data():
+async def read_data(check: Annotated[bool, Depends(check_is_login)]):
+    if not check:
+        return
     query = "SELECT * FROM varians;"
     cursor.execute(query)
     data = cursor.fetchall()
@@ -18,7 +20,9 @@ async def read_data():
     }
 
 @varian.get('/varian/{id}')
-async def read_data(id: int):
+async def read_data(id: int, check: Annotated[bool, Depends(check_is_login)]):
+    if not check:
+        return
     select_query = "SELECT * FROM varians WHERE id = %s;"
     cursor.execute(select_query, (id,))
     data = cursor.fetchone()

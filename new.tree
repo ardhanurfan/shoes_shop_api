@@ -1,0 +1,28 @@
+├── .dockerignore
+├── .env
+├── .env.example
+├── .github
+│  └── workflows
+│    └── deploy.yaml
+├── .gitignore
+├── db
+│  ├── connection.py
+│  └── DigiCertGlobalRootCA.crt.pem
+├── docker-compose.yaml
+├── Dockerfile
+├── main.py
+├── middleware
+│  └── jwt.py
+├── models
+│  ├── brand.py
+│  ├── shoes.py
+│  ├── token.py
+│  ├── tokenData.py
+│  ├── user.py
+│  └── varian.py
+├── requirements.txt
+└── routes
+  ├── auth.py
+  ├── brand.py
+  ├── shoes.py
+  └── varian.py
