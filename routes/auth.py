@@ -1,7 +1,7 @@
 from datetime import timedelta
 import os
 from typing import Annotated
-from fastapi import APIRouter, Depends, Form, HTTPException
+from fastapi import APIRouter, Depends, Form, HTTPException, status
 from middleware.jwt import create_access_token, get_current_user
 from passlib.context import CryptContext
 from db.connection import cursor, conn
@@ -33,8 +33,20 @@ async def login_for_access_token(username: str = Form(...), password: str = Form
 # Registration endpoint
 @auth.post("/register")
 async def register(fullname: str = Form(...), username: str = Form(...), email: str = Form(...), password: str = Form(...), role: str = Form(default="user")):
+    # Check sudah ada belum
+    query = ("SELECT * FROM users WHERE username = %s")
+    cursor.execute(query, (username,))
+    result = cursor.fetchall()
+    if result:
+        raise HTTPException(status_code=status.HTTP_302_FOUND, detail="Username already exist")
+    
+    query = ("SELECT * FROM users WHERE email = %s")
+    cursor.execute(query, (email,))
+    result = cursor.fetchall()
+    if result:
+        raise HTTPException(status_code=status.HTTP_302_FOUND, detail="Email already exist")
+    
     hashed_password = pwd_context.hash(password)
-
     query = "INSERT INTO users (fullname, username, email, password, role) VALUES (%s, %s, %s, %s, %s)"
     cursor.execute(query, (fullname, username, email, hashed_password, role,))
     conn.commit()
