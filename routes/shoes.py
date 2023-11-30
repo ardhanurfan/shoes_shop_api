@@ -6,7 +6,7 @@ from models.shoes import Shoes
 
 shoes = APIRouter()
 
-@shoes.get('/shoes')
+@shoes.get('/shoes', tags=["User"])
 async def read_data(check: Annotated[bool, Depends(check_is_login)]):
     if not check:
         return
@@ -31,7 +31,7 @@ async def read_data(check: Annotated[bool, Depends(check_is_login)]):
         "data" : data
     }
 
-@shoes.get('/shoes/{id}')
+@shoes.get('/shoes/{id}', tags=["User"])
 async def read_data(id: int, check: Annotated[bool, Depends(check_is_login)]):
     if not check:
         return
@@ -58,7 +58,7 @@ async def read_data(id: int, check: Annotated[bool, Depends(check_is_login)]):
         "data" : data
     }
 
-@shoes.post('/shoes')
+@shoes.post('/shoes', tags=["Admin"])
 async def write_data(shoes: Shoes, check: Annotated[bool, Depends(check_is_admin)]):
     if not check:
         return
@@ -83,7 +83,7 @@ async def write_data(shoes: Shoes, check: Annotated[bool, Depends(check_is_admin
         "data" : new_shoes
     }
     
-@shoes.put('/shoes/{id}')
+@shoes.put('/shoes/{id}', tags=["Admin"])
 async def update_data(shoes: Shoes, id:int, check: Annotated[bool, Depends(check_is_admin)]):
     if not check:
         return
@@ -108,7 +108,7 @@ async def update_data(shoes: Shoes, id:int, check: Annotated[bool, Depends(check
         "data" : new_shoes
     }
 
-@shoes.delete('/shoes/{id}')
+@shoes.delete('/shoes/{id}', tags=["Admin"])
 async def delete_data(id: int, check: Annotated[bool, Depends(check_is_admin)]):
     if not check:
         return

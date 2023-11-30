@@ -6,7 +6,7 @@ from models.brand import Brand
 
 brand = APIRouter()
 
-@brand.get('/brand')
+@brand.get('/brand', tags=["User"])
 async def read_data(check: Annotated[bool, Depends(check_is_login)]):
     if not check:
         return
@@ -19,7 +19,7 @@ async def read_data(check: Annotated[bool, Depends(check_is_login)]):
         "data" : data
     }
 
-@brand.get('/brand/{id}')
+@brand.get('/brand/{id}', tags=["User"])
 async def read_data(id: int, check: Annotated[bool, Depends(check_is_login)]):
     if not check:
         return
@@ -35,7 +35,7 @@ async def read_data(id: int, check: Annotated[bool, Depends(check_is_login)]):
         "data" : data
     }
 
-@brand.post('/brand')
+@brand.post('/brand', tags=["Admin"])
 async def write_data(brand: Brand, check: Annotated[bool, Depends(check_is_admin)]):
     if not check:
         return
@@ -54,7 +54,7 @@ async def write_data(brand: Brand, check: Annotated[bool, Depends(check_is_admin
         "data" : new_brand
     }
     
-@brand.put('/brand/{id}')
+@brand.put('/brand/{id}', tags=["Admin"])
 async def update_data(brand: Brand, id:int, check: Annotated[bool, Depends(check_is_admin)]):
     if not check:
         return
@@ -79,7 +79,7 @@ async def update_data(brand: Brand, id:int, check: Annotated[bool, Depends(check
         "data" : new_brand
     }
 
-@brand.delete('/brand/{id}')
+@brand.delete('/brand/{id}', tags=["Admin"])
 async def delete_data(id: int, check: Annotated[bool, Depends(check_is_admin)]):
     if not check:
         return

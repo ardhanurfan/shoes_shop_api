@@ -6,7 +6,7 @@ from models.varian import Varian
 
 varian = APIRouter()
 
-@varian.get('/varian')
+@varian.get('/varian', tags=["User"])
 async def read_data(check: Annotated[bool, Depends(check_is_login)]):
     if not check:
         return
@@ -19,7 +19,7 @@ async def read_data(check: Annotated[bool, Depends(check_is_login)]):
         "data" : data
     }
 
-@varian.get('/varian/{id}')
+@varian.get('/varian/{id}', tags=["User"])
 async def read_data(id: int, check: Annotated[bool, Depends(check_is_login)]):
     if not check:
         return
@@ -35,7 +35,7 @@ async def read_data(id: int, check: Annotated[bool, Depends(check_is_login)]):
         "data" : data
     }
 
-@varian.post('/varian')
+@varian.post('/varian', tags=["Admin"])
 async def write_data(varian: Varian, check: Annotated[bool, Depends(check_is_admin)]):
     if not check:
         return
@@ -60,7 +60,7 @@ async def write_data(varian: Varian, check: Annotated[bool, Depends(check_is_adm
         "data" : new_varian
     }
     
-@varian.put('/varian/{id}')
+@varian.put('/varian/{id}', tags=["Admin"])
 async def update_data(varian: Varian, id:int, check: Annotated[bool, Depends(check_is_admin)]):
     if not check:
         return
@@ -85,7 +85,7 @@ async def update_data(varian: Varian, id:int, check: Annotated[bool, Depends(che
         "data" : new_varian
     }
 
-@varian.delete('/varian/{id}')
+@varian.delete('/varian/{id}', tags=["Admin"])
 async def delete_data(id: int, check: Annotated[bool, Depends(check_is_admin)]):
     if not check:
         return

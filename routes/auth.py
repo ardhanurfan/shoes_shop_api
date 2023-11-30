@@ -17,7 +17,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES"))
 auth = APIRouter()
 
 # Token endpoint
-@auth.post("/login", response_model=Token)
+@auth.post("/login", response_model=Token, tags=["Authentication"])
 async def login_for_access_token(username: str = Form(...), password: str = Form(...)):
     query = ("SELECT * FROM users WHERE username = %s")
     cursor.execute(query, (username,))
@@ -31,7 +31,7 @@ async def login_for_access_token(username: str = Form(...), password: str = Form
     raise HTTPException(status_code=401, detail="Invalid credentials")
 
 # Registration endpoint
-@auth.post("/register")
+@auth.post("/register", tags=["Authentication"])
 async def register(fullname: str = Form(...), username: str = Form(...), email: str = Form(...), password: str = Form(...), role: str = Form(default="user")):
     # Check sudah ada belum
     query = ("SELECT * FROM users WHERE username = %s")
@@ -61,6 +61,6 @@ async def register(fullname: str = Form(...), username: str = Form(...), email: 
     }
 
 # Protected endpoint
-@auth.get("/users/me")
+@auth.get("/users/me", tags=["Authentication"])
 async def read_users_me(current_user: Annotated[User, Depends(get_current_user)]):
     return current_user
