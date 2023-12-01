@@ -1,6 +1,6 @@
 from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, status
-from db.connection import cursor, conn
+from db.connection import connectDB
 from middleware.jwt import check_is_admin, check_is_login
 from models.shoes import Shoes
 
@@ -11,6 +11,8 @@ async def read_data(check: Annotated[bool, Depends(check_is_login)]):
     if not check:
         return
     query = "SELECT * FROM shoes;"
+    conn = connectDB()
+    cursor = conn.cursor(dictionary=True)
     cursor.execute(query)
     data = cursor.fetchall()
 
@@ -24,7 +26,8 @@ async def read_data(check: Annotated[bool, Depends(check_is_login)]):
         cursor.execute(query, (data[i]["brand_id"],))
         data_varians = cursor.fetchone()
         data[i]["brand"] = data_varians 
-
+    cursor.close()
+    conn.close()
     return {
         "code": 200,
         "messages" : "Get All Shoes successfully",
@@ -36,6 +39,8 @@ async def read_data(id: int, check: Annotated[bool, Depends(check_is_login)]):
     if not check:
         return
     select_query = "SELECT * FROM shoes WHERE id = %s;"
+    conn = connectDB()
+    cursor = conn.cursor(dictionary=True)
     cursor.execute(select_query, (id,))
     data = cursor.fetchone()
 
@@ -51,7 +56,8 @@ async def read_data(id: int, check: Annotated[bool, Depends(check_is_login)]):
     cursor.execute(query, (data["brand_id"],))
     data_varians = cursor.fetchone()
     data["brand"] = data_varians 
-    
+    cursor.close()
+    conn.close()
     return {
         "code": 200,
         "messages" : "Get Shoes successfully",
@@ -64,6 +70,8 @@ async def write_data(shoes: Shoes, check: Annotated[bool, Depends(check_is_admin
         return
     shoes_json = shoes.model_dump()
     select_query = "SELECT * FROM brands WHERE id = %s;"
+    conn = connectDB()
+    cursor = conn.cursor(dictionary=True)
     cursor.execute(select_query, (shoes_json["brand_id"],))
     data = cursor.fetchone()
     if data is None:
@@ -76,7 +84,8 @@ async def write_data(shoes: Shoes, check: Annotated[bool, Depends(check_is_admin
     select_query = "SELECT * FROM shoes WHERE id = LAST_INSERT_ID();"
     cursor.execute(select_query)
     new_shoes = cursor.fetchone()
-
+    cursor.close()
+    conn.close()
     return {
         "code": 200,
         "messages" : "Add Shoes successfully",
@@ -89,6 +98,8 @@ async def update_data(shoes: Shoes, id:int, check: Annotated[bool, Depends(check
         return
     shoes_json = shoes.model_dump()
     select_query = "SELECT * FROM shoes WHERE id = %s;"
+    conn = connectDB()
+    cursor = conn.cursor(dictionary=True)
     cursor.execute(select_query, (id,))
     data = cursor.fetchone()
     if data is None:
@@ -101,7 +112,8 @@ async def update_data(shoes: Shoes, id:int, check: Annotated[bool, Depends(check
     select_query = "SELECT * FROM shoes WHERE shoes.id = %s;"
     cursor.execute(select_query, (id,))
     new_shoes = cursor.fetchone()
-    
+    cursor.close()
+    conn.close()
     return {
         "code": 200,
         "messages" : "Update Brand successfully",
@@ -113,6 +125,8 @@ async def delete_data(id: int, check: Annotated[bool, Depends(check_is_admin)]):
     if not check:
         return
     select_query = "SELECT * FROM shoes WHERE id = %s;"
+    conn = connectDB()
+    cursor = conn.cursor(dictionary=True)
     cursor.execute(select_query, (id,))
     data = cursor.fetchone()
     if data is None:
@@ -121,6 +135,8 @@ async def delete_data(id: int, check: Annotated[bool, Depends(check_is_admin)]):
     query = "DELETE FROM shoes WHERE id = %s;"
     cursor.execute(query, (id,))
     conn.commit()
+    cursor.close()
+    conn.close()
     return {
         "code": 200,
         "messages" : "Delete Shoes successfully",

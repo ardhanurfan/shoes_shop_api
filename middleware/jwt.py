@@ -6,7 +6,7 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from passlib.context import CryptContext
-from db.connection import cursor
+from db.connection import connectDB
 from models.tokenData import TokenData
 
 # Load environment variables
@@ -51,8 +51,12 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
     except JWTError:
         raise credentials_exception
     query = ("SELECT * FROM users WHERE username = %s")
+    conn = connectDB()
+    cursor = conn.cursor(dictionary=True)
     cursor.execute(query, (token_data.username,))
     result = cursor.fetchone()
+    cursor.close()
+    conn.close()
     if not result :
         raise credentials_exception
     else :
@@ -77,8 +81,12 @@ async def check_is_admin(token: Annotated[bool, Depends(oauth2_scheme)]):
     except JWTError:
         raise credentials_exception
     query = ("SELECT * FROM users WHERE username = %s")
+    conn = connectDB()
+    cursor = conn.cursor(dictionary=True)
     cursor.execute(query, (token_data.username,))
     result = cursor.fetchone()
+    cursor.close()
+    conn.close()
     if not result:
         raise credentials_exception
     elif result['role'] != "admin":

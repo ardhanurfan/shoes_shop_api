@@ -1,6 +1,6 @@
 from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, status
-from db.connection import cursor, conn
+from db.connection import connectDB
 from middleware.jwt import check_is_admin, check_is_login
 from models.brand import Brand
 
@@ -11,8 +11,12 @@ async def read_data(check: Annotated[bool, Depends(check_is_login)]):
     if not check:
         return
     query = "SELECT * FROM brands;"
+    conn = connectDB()
+    cursor = conn.cursor(dictionary=True)
     cursor.execute(query)
     data = cursor.fetchall()
+    cursor.close()
+    conn.close()
     return {
         "code": 200,
         "messages" : "Get All Brands successfully",
@@ -24,11 +28,14 @@ async def read_data(id: int, check: Annotated[bool, Depends(check_is_login)]):
     if not check:
         return
     select_query = "SELECT * FROM brands WHERE id = %s;"
+    conn = connectDB()
+    cursor = conn.cursor(dictionary=True)
     cursor.execute(select_query, (id,))
     data = cursor.fetchone()
     if data is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Data brand id {id} Not Found")
-
+    cursor.close()
+    conn.close()
     return {
         "code": 200,
         "messages" : "Get Brand successfully",
@@ -41,13 +48,16 @@ async def write_data(brand: Brand, check: Annotated[bool, Depends(check_is_admin
         return
     brand_json = brand.model_dump()
     query = "INSERT INTO brands(name) VALUES(%s);"
+    conn = connectDB()
+    cursor = conn.cursor(dictionary=True)
     cursor.execute(query, (brand_json["name"],))
     conn.commit()
 
     select_query = "SELECT * FROM brands WHERE id = LAST_INSERT_ID();"
     cursor.execute(select_query)
     new_brand = cursor.fetchone()
-
+    cursor.close()
+    conn.close()
     return {
         "code": 200,
         "messages" : "Add Brand successfully",
@@ -60,6 +70,8 @@ async def update_data(brand: Brand, id:int, check: Annotated[bool, Depends(check
         return
     brand_json = brand.model_dump()
     select_query = "SELECT * FROM brands WHERE id = %s;"
+    conn = connectDB()
+    cursor = conn.cursor(dictionary=True)
     cursor.execute(select_query, (id,))
     data = cursor.fetchone()
     if data is None:
@@ -72,7 +84,8 @@ async def update_data(brand: Brand, id:int, check: Annotated[bool, Depends(check
     select_query = "SELECT * FROM brands WHERE brands.id = %s;"
     cursor.execute(select_query, (id,))
     new_brand = cursor.fetchone()
-    
+    cursor.close()
+    conn.close()
     return {
         "code": 200,
         "messages" : "Update Brand successfully",
@@ -84,6 +97,8 @@ async def delete_data(id: int, check: Annotated[bool, Depends(check_is_admin)]):
     if not check:
         return
     select_query = "SELECT * FROM brands WHERE id = %s;"
+    conn = connectDB()
+    cursor = conn.cursor(dictionary=True)
     cursor.execute(select_query, (id,))
     data = cursor.fetchone()
     if data is None:
@@ -92,6 +107,8 @@ async def delete_data(id: int, check: Annotated[bool, Depends(check_is_admin)]):
     query = "DELETE FROM brands WHERE id = %s;"
     cursor.execute(query, (id,))
     conn.commit()
+    cursor.close()
+    conn.close()
     return {
         "code": 200,
         "messages" : "Delete Brand successfully",

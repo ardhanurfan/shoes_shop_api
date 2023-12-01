@@ -4,7 +4,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, Form, HTTPException, status
 from middleware.jwt import create_access_token, get_current_user
 from passlib.context import CryptContext
-from db.connection import cursor, conn
+from db.connection import connectDB
 
 from models.token import Token
 from models.user import User
@@ -20,8 +20,12 @@ auth = APIRouter()
 @auth.post("/login", response_model=Token, tags=["Authentication"])
 async def login_for_access_token(username: str = Form(...), password: str = Form(...)):
     query = ("SELECT * FROM users WHERE username = %s")
+    conn = connectDB()
+    cursor = conn.cursor(dictionary=True)
     cursor.execute(query, (username,))
     result = cursor.fetchone()
+    cursor.close()
+    conn.close()
     if result and pwd_context.verify(password, result["password"]):
         access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
         access_token = create_access_token(
@@ -35,8 +39,11 @@ async def login_for_access_token(username: str = Form(...), password: str = Form
 async def register(fullname: str = Form(...), username: str = Form(...), email: str = Form(...), password: str = Form(...), role: str = Form(default="user")):
     # Check sudah ada belum
     query = ("SELECT * FROM users WHERE username = %s")
+    conn = connectDB()
+    cursor = conn.cursor(dictionary=True)
     cursor.execute(query, (username,))
     result = cursor.fetchall()
+    cursor.close()
     if result:
         raise HTTPException(status_code=status.HTTP_302_FOUND, detail="Username already exist")
     
@@ -50,6 +57,8 @@ async def register(fullname: str = Form(...), username: str = Form(...), email: 
     query = "INSERT INTO users (fullname, username, email, password, role) VALUES (%s, %s, %s, %s, %s)"
     cursor.execute(query, (fullname, username, email, hashed_password, role,))
     conn.commit()
+    cursor.close()
+    conn.close()
     return {
             "code": 200,
             "messages" : "Register successfully",
