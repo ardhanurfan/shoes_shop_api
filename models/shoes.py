@@ -8,3 +8,4 @@ class Shoes(BaseModel):
     name:str
     category:str
     stock:int
+    price:int

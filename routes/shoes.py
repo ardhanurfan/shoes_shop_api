@@ -77,8 +77,8 @@ async def write_data(shoes: Shoes, check: Annotated[bool, Depends(check_is_admin
     if data is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Brand id {shoes_json['brand_id']} Not Found")
 
-    query = "INSERT INTO shoes(brand_id, name, category, stock) VALUES(%s, %s, %s, %s);"
-    cursor.execute(query, (shoes_json["brand_id"], shoes_json["name"], shoes_json["category"], shoes_json["stock"],))
+    query = "INSERT INTO shoes(brand_id, name, category, stock, price) VALUES(%s, %s, %s, %s, %s);"
+    cursor.execute(query, (shoes_json["brand_id"], shoes_json["name"], shoes_json["category"], shoes_json["stock"], shoes_json["price"],))
     conn.commit()
 
     select_query = "SELECT * FROM shoes WHERE id = LAST_INSERT_ID();"
@@ -105,8 +105,8 @@ async def update_data(shoes: Shoes, id:int, check: Annotated[bool, Depends(check
     if data is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Data shoes id {id} Not Found")
     
-    query = "UPDATE shoes SET brand_id=%s, name=%s, category=%s, stock=%s WHERE shoes.id = %s;"
-    cursor.execute(query, (shoes_json["brand_id"], shoes_json["name"], shoes_json["category"], shoes_json["stock"], id,))
+    query = "UPDATE shoes SET brand_id=%s, name=%s, category=%s, stock=%s, price=%s WHERE shoes.id = %s;"
+    cursor.execute(query, (shoes_json["brand_id"], shoes_json["name"], shoes_json["category"], shoes_json["stock"], shoes_json["price"], id,))
     conn.commit()
 
     select_query = "SELECT * FROM shoes WHERE shoes.id = %s;"
