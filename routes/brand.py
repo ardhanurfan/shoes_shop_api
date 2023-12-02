@@ -43,7 +43,7 @@ async def read_data(id: int, check: Annotated[bool, Depends(check_is_login)]):
     }
 
 @brand.post('/brand', tags=["Admin"])
-async def write_data(brand: Brand, check: Annotated[bool, Depends(check_is_admin)]):
+async def write_data(brand: Brand , check: Annotated[bool, Depends(check_is_admin)]):
     if not check:
         return
     brand_json = brand.model_dump()

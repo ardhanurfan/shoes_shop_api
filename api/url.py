@@ -1,0 +1,1 @@
+shoes_cleaner = "http://shoewizards.cbh8eahqfjh9hnep.eastus.azurecontainer.io/"

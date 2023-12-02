@@ -6,3 +6,5 @@ class User(BaseModel):
     username: str
     email: str
     password: str
+    cleaning_token:str
+    consult_token:str
