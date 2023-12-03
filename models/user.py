@@ -7,4 +7,3 @@ class User(BaseModel):
     email: str
     password: str
     cleaning_token:str
-    consult_token:str

@@ -74,8 +74,6 @@ async def register(fullname: str = Form(...), username: str = Form(...), email: 
         raise HTTPException(status_code=status.HTTP_302_FOUND, detail="Email already exist")
     hashed_password = pwd_context.hash(password)
 
-    # Register Consultant
-
     # Register Shoes Cleaner
     urlCleaner = shoes_cleaner +'users/users'
     headersCleaner = {
@@ -109,7 +107,7 @@ async def register(fullname: str = Form(...), username: str = Form(...), email: 
                 }
         }
     else:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Register to Shoe Wizards Co. failed")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Register our partner Shoe Wizards Co. failed")
 
 # Protected endpoint
 @auth.get("/users/me", tags=["Authentication"])
