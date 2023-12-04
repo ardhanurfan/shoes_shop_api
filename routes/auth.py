@@ -49,9 +49,9 @@ def authenticationCleaner(username, password):
     }
 
     params={
-        'flag' : False,
+        'flag' : 'false',
     }
-    
+
     response = requests.post(url, headers=headers, data=data, params=params)
     if response.status_code == 200:
         result = response.json()
@@ -93,7 +93,7 @@ async def register(fullname: str = Form(...), username: str = Form(...), email: 
         'password': password,
         'username': username,
         'role': 'Admin',
-        'flag': False,
+        'flag': 'false',
     }
     responseCleaner = requests.post(urlCleaner, headers=headersCleaner, params=paramsCleaner)
 
