@@ -50,7 +50,7 @@ async def consultation_cleaner(current_user: Annotated[dict, Depends(get_current
                 return {
                     "code": 200,
                     "messages" : "Get Cleaners Consultation successfully",
-                    "data" : responseConsult
+                    "data" : responseConsult.json()
                 }
             else:
                 raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Get consultations on Shoe Wizards Co. failed")
