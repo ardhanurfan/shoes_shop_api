@@ -58,3 +58,27 @@ async def consultation_cleaner(current_user: Annotated[dict, Depends(get_current
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Get user on Shoe Wizards Co. failed")
     else:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Add shoes to Shoe Wizards Co. failed")
+    
+@cleaner.get('/cleaner', tags=["Cleaner"])
+async def consultation_cleaner(current_user: Annotated[dict, Depends(get_current_user)]):
+    if not current_user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+    
+    token = current_user['data']['cleaning_token']
+
+    url = shoes_cleaner +'products/products'
+    headers = {
+        'accept': 'application/json',
+        'Authorization': 'Bearer ' + token
+    }
+
+    responseProduct = requests.get(url, headers=headers)
+
+    if responseProduct.status_code == 200:
+        return {
+            "code": 200,
+            "messages" : "Get Cleaners Consultation successfully",
+            "data" : responseProduct.json()
+        }
+    else:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Get products on Shoe Wizards Co. failed")
