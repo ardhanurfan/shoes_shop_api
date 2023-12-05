@@ -24,9 +24,8 @@
 2. [Technologies Used](#technologies-used)
 3. [Installation](#installation)
 4. [Structure](#structure)
-5. [Project Status](#project-status)
-6. [Acknowledgements](#acknowledgements)
-7. [Copyright](#copyright)
+5. [Acknowledgements](#acknowledgements)
+6. [Copyright](#copyright)
 
 <a name="general-information">
 
