@@ -29,6 +29,7 @@
 7. [Copyright](#copyright)
 
 <a name="general-information">
+
 ## General Information
 
 VShoes merupakan sebuah toko online berbasis website application yang memberikan layanan kepada pelanggan untuk melakukan personalisasi dan memilih produk sepatu melalui visual 3D. VShoes merupakan sebuah marketplace yang menjadi distributor berbagai merek sepatu. Nantinya pelanggan dapat melihat berbagai merek dan model sepatu dalam satu genggaman aplikasi.
@@ -55,6 +56,7 @@ Untuk mendukung personalisasi dan membantu pengguna dalam melakukan pemilihan pr
   > Note: The version of the libraries above is the version that we used in this project. You can use the latest version of the libraries.
 
 <a name="installation">
+
 ## Installation
 
 #### Instalation without Docker
@@ -94,8 +96,10 @@ docker-compose up -d --build
 ```
 
 <a name="structure">
+
 ## Structure
-```
+
+```bash
 ├── .dockerignore
 ├── .env.example
 ├── .github
@@ -130,7 +134,9 @@ docker-compose up -d --build
 ```
 
 <a name="acknowledgements">
+
 ## Acknowledgements
+
 - Terima kasih kepada Tuhan Yang Maha Esa
 - Bapak I Gusti Bagus Baskara Nugraha, S.T., M.T., Ph.D.
 - Teman-teman kelas K02 Sistem dan Teknologi Informasi ITB
