@@ -116,7 +116,7 @@ async def update_data(shoes: Shoes, id:int, check: Annotated[bool, Depends(check
     conn.close()
     return {
         "code": 200,
-        "messages" : "Update Brand successfully",
+        "messages" : "Update Shoes successfully",
         "data" : new_shoes
     }
 
